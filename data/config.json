@@ -2,7 +2,7 @@
   "seuilValue": 255,
   "flashRight": 0,
   "rotZ_projo": 0,
-  "transZ_projo": 57,
+  "transZ_projo": -2,
   "UpperLeftY": 200,
   "seuil_ratioSurfacePerimetre": 1.2999999523162842,
   "grayLevelDown": 126,
@@ -18,7 +18,7 @@
   "UpperRightY": 200,
   "rotX_projo": 0,
   "UpperRightX": 400,
-  "transY_projo": 441,
+  "transY_projo": 382,
   "flashDown": 0,
   "blueMax": 270,
   "grayLevelUp": 126,
@@ -34,9 +34,10 @@
   "flashUp": 0,
   "seuil_smallArea": 200,
   "rotY_projo": 0,
-  "transX_projo": 799,
+  "transX_projo": 687,
   "yellowMax": 80,
   "backMin" : 0,
   "backMax" : 0,
   "idCam": 40
+}
 }

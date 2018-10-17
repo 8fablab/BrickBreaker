@@ -8,6 +8,8 @@ import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.WorldManifold;
 
+import processing.sound.*;
+
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -23,11 +25,32 @@ char configKey = 'h';
 
 
 // TODO: HERITAGE CONSTRUCTEUR DANS AREACORE + typeArea : BUMP, WALL,  LAVA ...
+/* Todo To
+*
+*  BrickBreaker : 
+*    Sons
+*    Fonctions retrecissement
+*    
+*  PortalBall
+*    Gravité + Goal
+*    Fonction mur portal et bumper
+*
+*  Sumo
+*    Fin et goal à atteindre
+*
+*/
+
 
 Box2DProcessing box2d;
 ArrayList<areaCore> myMap;
 ArrayList<Object> myObj1, myObj2;
-player player1, player2;
+player player1, player2, barPlayer1, barPlayer2;
+
+int ScoreP1 = 0, ScoreP2 = 0;
+
+SoundFile Coin;
+SoundFile Tuyau;
+SoundFile Bump;
 
 
 void setup() {
@@ -47,8 +70,13 @@ void setup() {
   box2d = new Box2DProcessing(this);
   box2d.createWorld();
   box2d.setScaleFactor(30);
-  box2d.setGravity(0,-1000);
+  box2d.setGravity(0,0);
   box2d.listenForCollisions();
+  
+  
+  Coin = new SoundFile(this, "piece.wav");
+  Tuyau = new SoundFile(this, "tuyau.wav");
+  Bump = new SoundFile(this, "saut.wav");
   
   myMap = new ArrayList<areaCore>(); 
   print("pojpoj");
@@ -57,12 +85,18 @@ void setup() {
 
   player1 = new player(1);
   player2 = new player(2);
-
+  
+  barPlayer1 = new player(3);
+  barPlayer2 = new player(4);
 }
 
 void reset() {
     player1.reset();
-    player2.reset();    
+    player2.reset();  
+    barPlayer1.reset();  
+    barPlayer2.reset();
+    
+    
     atScan();
 }
 
@@ -102,6 +136,8 @@ void draw() {
   //UPDATE
   player1.updateMe();
   player2.updateMe();
+  barPlayer1.updateMe();
+  barPlayer2.updateMe();
   box2d.step();
   
   myObj1.clear();
@@ -117,11 +153,22 @@ void draw() {
   for (areaCore it : myMap)
         myPtxInter.drawArea(it);
         
+  barPlayer1.drawMe();
+  barPlayer2.drawMe();
   player1.drawMe();
   player2.drawMe();
+  
+    //Values
+  String ScoreStr = "Player 1 : "  + ScoreP1 + "\n"
+  + "Player 2 : "  + ScoreP2 +"\n";
+  
+  myPtxInter.mFbo.textAlign(LEFT);
+  myPtxInter.mFbo.text(ScoreStr, 50, 100);
 
   myPtxInter.mFbo.endDraw();
   myPtxInter.displayFBO();
+  
+
 }
 
 
@@ -178,15 +225,13 @@ void keyPressed() {
 
 
     switch(key) {
-    case 'z': player1.facing.y =  1; break;
-    case 's': player1.facing.y = -1; break; 
-    case 'q': player1.facing.x = -1; break;
-    case 'd': player1.facing.x =  1; break; 
+    case 'q': barPlayer2.facing.x = -1; break;
+    case 's': player2.body.setLinearVelocity(new Vec2(0, 10)); break; 
+    case 'd': barPlayer2.facing.x =  1; break; 
     
-    case '5': player2.facing.y =  1; break;
-    case '2': player2.facing.y = -1; break; 
-    case '1': player2.facing.x = -1; break;
-    case '3': player2.facing.x =  1; break; 
+    case 'k': barPlayer1.facing.x = -1; break;
+    case 'l': player1.body.setLinearVelocity(new Vec2(0, 10)); break; 
+    case 'm': barPlayer1.facing.x =  1; break; 
       
     case 'p' : reset();
     }
@@ -203,15 +248,11 @@ void keyReleased() {
   // ===== ======================= =====
   
   switch(key) {
-  case 'z': player1.facing.y = min(player1.facing.y, 0); break;
-  case 's': player1.facing.y = max(player1.facing.y, 0); break;
-  case 'q': player1.facing.x = max(player1.facing.x, 0); break;
-  case 'd': player1.facing.x = min(player1.facing.x, 0); break;
+  case 'q': barPlayer2.facing.x = max(barPlayer2.facing.x, 0); break;
+  case 'd': barPlayer2.facing.x = min(barPlayer2.facing.x, 0); break;
 
-  case '5': player2.facing.y = min(player2.facing.y, 0); break;
-  case '2': player2.facing.y = max(player2.facing.y, 0); break;
-  case '1': player2.facing.x = max(player2.facing.x, 0); break;
-  case '3': player2.facing.x = min(player2.facing.x, 0); break;
+  case 'k': barPlayer1.facing.x = max(barPlayer1.facing.x, 0); break;
+  case 'm': barPlayer1.facing.x = min(barPlayer1.facing.x, 0); break;
   }
   
 }
@@ -283,21 +324,33 @@ void beginContact(Contact cp  ) {
   // Get our objects that reference these bodies
   Object o1 = b1.getUserData();
   Object o2 = b2.getUserData();
+  
+  
+  System.out.println(">New Contact");
 
   // 2 Joueurs
-  if (o1.getClass() == player.class && o2.getClass() == player.class) {
+  if (o1.getClass() == player.class && o2.getClass() == player.class)
+  {
+    
+    System.out.println("--> Joueur/Joueur");
     
     player p1, p2;
     
-    if( ((player) o1).id == 1) {
+    if( ((player) o1).id == 1)
+    {
       p1 = (player) o1;  
       p2 = (player) o2;  
     
-    } else {
+    }
+    
+    else
+    {
       p1 = (player) o2;  
       p2 = (player) o1;  
     }
 
+    if(p1.id <= 2 && p2.id <= 2)
+    {
     PVector dir = box2d.coordWorldToPixelsPVector( p1.body.getPosition() );
     dir.sub(box2d.coordWorldToPixelsPVector( p2.body.getPosition() ) );
     dir.normalize();
@@ -309,26 +362,104 @@ void beginContact(Contact cp  ) {
     // Bump par vitesse de l'autre (centre centre? Ou direction de vitesse? anti physique)
     p1.s.add( p2.facing.copy().mult( abs(p2.sCom.mag() + p1.s.mag()) ).mult(0.7) );
     p2.s.add( p1.facing.copy().mult( abs(p1.sCom.mag() + p1.s.mag()) ).mult(0.7) );  
+    }
+
     
   } 
   
 
   // Zone Joueur
-  if( (o1.getClass() == areaCore.class && o2.getClass() == player.class) || (o1.getClass() == player.class && o2.getClass() == areaCore.class) ) {
+  if( (o1.getClass() == areaCore.class && o2.getClass() == player.class) || (o1.getClass() == player.class && o2.getClass() == areaCore.class) )
+  {
+    
+    System.out.println("--> Zone/Joueur");
+        
     player myP;
     areaCore myA;
 
-    if(o1.getClass() == areaCore.class) {
+    if(o1.getClass() == areaCore.class)
+    {
       myA = (areaCore) o1;
       myP = (player) o2;
-    } else {
+    }
+    
+    else
+    {
       myA = (areaCore) o2;
       myP = (player) o1;
     }
     
     if(b1.getUserData() == b2.getUserData());
-    if(myA.type == areaCoreType.BUMP) {
-      myP.s.add( normP.copy().mult(20));
+   
+    if(myA.type == areaCoreType.BUMP)
+    {     
+      System.out.println("----> Bump");
+      
+      if(myP.id <= 2)
+      {
+         PVector BumpedVelocity = new PVector();
+         BumpedVelocity.x = myP.body.getLinearVelocity().x;
+         BumpedVelocity.y = myP.body.getLinearVelocity().y;
+         
+         BumpedVelocity.mult(1.5);
+         
+         BumpedVelocity.x = (BumpedVelocity.x < 0 && Math.abs(BumpedVelocity.x) > 30) ? -30 : 30;
+         BumpedVelocity.y = (BumpedVelocity.y < 0 && Math.abs(BumpedVelocity.y) > 30) ? -30 : 30;
+         
+         
+         Bump.play();
+         
+         myP.body.setLinearVelocity(new Vec2(BumpedVelocity.x, BumpedVelocity.y));
+      }
+      
+
+      
+    }
+    
+    else if(myA.type == areaCoreType.WALL)
+    {      
+        System.out.println("----> Points");
+        
+        if(myP.id == 1)
+          ScoreP1 += 10;
+        
+        if(myP.id == 2)
+          ScoreP2 += 10;
+          
+        Coin.play();
+    }
+    
+    else if(myA.type == areaCoreType.LAVA)
+    {
+        Tuyau.play();
+        System.out.println("----> Shrink");
+        
+        if(myP.id == 1)
+        {
+          if(barPlayer2.Size >= 1)
+          {
+             barPlayer2.Size--;
+          }
+          
+          else
+          {
+             barPlayer2.Size = 4;         
+          }
+        }
+        
+        if(myP.id == 2)
+        {
+          if(barPlayer1.Size >= 1)
+          {
+             barPlayer1.Size--;
+          }
+          
+          else
+          {
+             barPlayer1.Size = 4;          
+          }
+
+        }
     }
     
   }
