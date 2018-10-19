@@ -19,11 +19,7 @@ import java.util.Set;
 // ===== 1) ROOT LIBRARY =====
 boolean isScanning, isInConfig;
 ptx_inter myPtxInter;
-<<<<<<< HEAD
 char scanKey = ' ';
-=======
-char scanKey = '8';
->>>>>>> af88bd31fa69f16274e2585ccf1ccddd0fc1d438
 char configKey = 'h';
 // ===== =============== =====
 
@@ -229,7 +225,6 @@ void keyPressed() {
 
 
     switch(key) {
-<<<<<<< HEAD
     case 'd': barPlayer2.facing.x = -1; break;
     //case 's': player2.body.setLinearVelocity(new Vec2(0, 10)); break; 
     case 'f': barPlayer2.facing.x =  1; break; 
@@ -237,15 +232,6 @@ void keyPressed() {
     case 'e': barPlayer1.facing.x = -1; break;
     //case 'l': player1.body.setLinearVelocity(new Vec2(0, 10)); break; 
     case 'r': barPlayer1.facing.x =  1; break; 
-=======
-    case 'q': barPlayer2.facing.x = -1; break;
-    case 's': player2.body.setLinearVelocity(new Vec2(0, 10)); break; 
-    case 'd': barPlayer2.facing.x =  1; break; 
-    
-    case 'k': barPlayer1.facing.x = -1; break;
-    case 'l': player1.body.setLinearVelocity(new Vec2(0, 10)); break; 
-    case 'm': barPlayer1.facing.x =  1; break; 
->>>>>>> af88bd31fa69f16274e2585ccf1ccddd0fc1d438
       
     case 'p' : reset();
     }
@@ -262,11 +248,11 @@ void keyReleased() {
   // ===== ======================= =====
   
   switch(key) {
-  case 'q': barPlayer2.facing.x = max(barPlayer2.facing.x, 0); break;
-  case 'd': barPlayer2.facing.x = min(barPlayer2.facing.x, 0); break;
+  case 'd': barPlayer2.facing.x = max(barPlayer2.facing.x, 0); break;
+  case 'f': barPlayer2.facing.x = min(barPlayer2.facing.x, 0); break;
 
-  case 'k': barPlayer1.facing.x = max(barPlayer1.facing.x, 0); break;
-  case 'm': barPlayer1.facing.x = min(barPlayer1.facing.x, 0); break;
+  case 'e': barPlayer1.facing.x = max(barPlayer1.facing.x, 0); break;
+  case 'r': barPlayer1.facing.x = min(barPlayer1.facing.x, 0); break;
   }
   
 }
@@ -450,11 +436,7 @@ void beginContact(Contact cp  ) {
         
         if(myP.id == 1)
         {
-<<<<<<< HEAD
           if(barPlayer2.Size > 1)
-=======
-          if(barPlayer2.Size >= 1)
->>>>>>> af88bd31fa69f16274e2585ccf1ccddd0fc1d438
           {
              barPlayer2.Size--;
           }
@@ -467,11 +449,7 @@ void beginContact(Contact cp  ) {
         
         if(myP.id == 2)
         {
-<<<<<<< HEAD
           if(barPlayer1.Size > 1)
-=======
-          if(barPlayer1.Size >= 1)
->>>>>>> af88bd31fa69f16274e2585ccf1ccddd0fc1d438
           {
              barPlayer1.Size--;
           }
