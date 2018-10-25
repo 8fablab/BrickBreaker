@@ -406,8 +406,8 @@ void beginContact(Contact cp  ) {
          BumpedVelocity.x = (BumpedVelocity.x < 0 && Math.abs(BumpedVelocity.x) > 30) ? -30 : 30;
          BumpedVelocity.y = (BumpedVelocity.y < 0 && Math.abs(BumpedVelocity.y) > 30) ? -30 : 30;
          
-         
-         Bump.play();
+         if(!Bump.isPlaying())
+           Bump.play();
          
          myP.body.setLinearVelocity(new Vec2(BumpedVelocity.x, BumpedVelocity.y));
       }
@@ -420,18 +420,23 @@ void beginContact(Contact cp  ) {
     {      
         System.out.println("----> Points");
         
-        if(myP.id == 1)
-          ScoreP1 += 10;
-        
-        if(myP.id == 2)
-          ScoreP2 += 10;
+        if(!Coin.isPlaying())
+        {
+          if(myP.id == 1)
+            ScoreP1 += 10;
           
-        Coin.play();
+          if(myP.id == 2)
+            ScoreP2 += 10;
+            
+          Coin.play();
+        }
     }
     
     else if(myA.type == areaCoreType.LAVA)
     {
-        Tuyau.play();
+        if(!Tuyau.isPlaying())
+          Tuyau.play();
+          
         System.out.println("----> Shrink");
         
         if(myP.id == 1)
