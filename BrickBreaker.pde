@@ -48,6 +48,7 @@ player player1, player2, barPlayer1, barPlayer2;
 
 int ScoreP1 = 0, ScoreP2 = 0;
 
+SoundFile Wall;
 SoundFile Coin;
 SoundFile Tuyau;
 SoundFile Bump;
@@ -77,6 +78,7 @@ void setup() {
   Coin = new SoundFile(this, "piece.wav");
   Tuyau = new SoundFile(this, "tuyau.wav");
   Bump = new SoundFile(this, "saut.wav");
+  Wall = new SoundFile(this, "mur.wav");
   
   myMap = new ArrayList<areaCore>(); 
   print("pojpoj");
@@ -159,11 +161,14 @@ void draw() {
   player2.drawMe();
   
     //Values
-  String ScoreStr = "Player 1 : "  + ScoreP1 + "\n"
-  + "Player 2 : "  + ScoreP2 +"\n";
+  String ScoreStr = "Player 1 : "  + ScoreP1 + "\n";
   
   myPtxInter.mFbo.textAlign(LEFT);
+  myPtxInter.mFbo.fill(255, 255,0);
   myPtxInter.mFbo.text(ScoreStr, 50, 100);
+  ScoreStr = "Player 2 : "  + ScoreP2 +"\n";
+  myPtxInter.mFbo.fill(255, 0, 255);
+  myPtxInter.mFbo.text(ScoreStr, 50, 140);
 
   myPtxInter.mFbo.endDraw();
   myPtxInter.displayFBO();
@@ -414,6 +419,14 @@ void beginContact(Contact cp  ) {
       
 
       
+    }
+    
+    else if(myA.type == areaCoreType.VOID)
+    {
+       if(!Wall.isPlaying())
+       {
+           Wall.play();
+       }
     }
     
     else if(myA.type == areaCoreType.WALL)

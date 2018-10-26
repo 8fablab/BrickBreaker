@@ -296,6 +296,8 @@ void reset(PVector p) {
       fd.filter.maskBits = 0x05;        
     }
     
+    p.y = myPtxInter.mFbo.height-myPtxInter.mFbo.height/9;
+    
     bd.position.set(box2d.coordPixelsToWorld(p));
 
     body = box2d.createBody(bd);
